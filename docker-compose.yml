@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  db:
+    image: "mysql/mysql-server:${MYSQL_VERSION}"
+    container_name: ${MYSQL_CONTAINER}
+    environment:
+      - TZ=${MYSQL_TZ}
+      - MYSQL_ROOT_PASSWORD=${ROOT_PASSW}
+    ports:
+      - ${MYSQL_PORT}:3306
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - net
+    restart: always
+    # Provide healthcheck script options for startup
+    healthcheck:
+      test: mysqladmin ping -h ${MYSQL_HOST} -u $${USER} --password=$${PASSW}
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 55
+
+volumes:
+  db-data:
+
+networks:
+  net:
+    driver: bridge
